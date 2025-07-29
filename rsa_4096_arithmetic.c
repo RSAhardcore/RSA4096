@@ -125,6 +125,8 @@ int bigint_mod_exp(bigint_t *result, const bigint_t *base, const bigint_t *exp, 
     /* Standard right-to-left binary method for smaller exponents */
     bigint_t temp_result, temp_base, temp_exp;
     bigint_set_u32(&temp_result, 1);
+    bigint_init(&temp_base);
+    bigint_init(&temp_exp);
     
     /* Reduce base mod modulus first */
     int ret = bigint_mod(&temp_base, base, mod);
@@ -146,6 +148,8 @@ int bigint_mod_exp(bigint_t *result, const bigint_t *base, const bigint_t *exp, 
             }
             
             bigint_t new_result, product;
+            bigint_init(&new_result);
+            bigint_init(&product);
             ret = bigint_mul(&product, &temp_result, &temp_base);
             if (ret != 0) return ret;
             
@@ -157,6 +161,7 @@ int bigint_mod_exp(bigint_t *result, const bigint_t *base, const bigint_t *exp, 
         
         /* Right shift exponent by 1 bit - FIXED */
         bigint_t new_exp;
+        bigint_init(&new_exp);
         ret = bigint_shift_right(&new_exp, &temp_exp, 1);
         if (ret != 0) return ret;
         bigint_copy(&temp_exp, &new_exp);
@@ -164,6 +169,8 @@ int bigint_mod_exp(bigint_t *result, const bigint_t *base, const bigint_t *exp, 
         /* Square the base for next iteration - FIXED: Only if exponent is not zero */
         if (!bigint_is_zero(&temp_exp)) {
             bigint_t new_base, square;
+            bigint_init(&new_base);
+            bigint_init(&square);
             ret = bigint_mul(&square, &temp_base, &temp_base);
             if (ret != 0) return ret;
             
